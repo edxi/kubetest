@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-demo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: deploy-demo
+      release: canary
+  template:
+    metadata:
+      labels:
+        app: deploy-demo
+        release: canary
+    spec:
+      containers:
+      - name: myweb
+        image: ikubernetes/myapp:v1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "50m"
+        ports:
+        - containerPort: 80

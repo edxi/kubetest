@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: liveness-httpget-pod
+  labels:
+    name: liveness-httpget-pod
+spec:
+  containers:
+  - name: liveness-httpget-pod
+    image: ikubernetes/myapp:v1
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 80
+        name: http
+    livenessProbe:
+        httpGet:
+          port: http
+          path: /index.html
+        initialDelaySeconds: 1
+        periodSeconds: 3

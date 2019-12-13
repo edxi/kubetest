@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-demo
+  labels:
+    name: pod-demo
+    app: myapp
+    tier: frontend
+spec:
+  containers:
+  - name: myapp
+    image: ikubernetes/myapp:v1
+    resources:
+        limits:
+          cpu: "100m"
+          memory: "128Mi"
+    ports:
+      - name: http
+        containerPort: 80
+      - name: https
+        containerPort: 443
+  - name: busybox
+    image: busybox
+    resources:
+        limits:
+          cpu: "100m"
+          memory: "128Mi"
+    command:
+      - "/bin/sh"
+      - "-c"
+      - "echo $(wget -O - http://myapp-demo) >> /tmp/test.txt; sleep 500"
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp-demo
+spec:
+  selector:
+    app: myapp
+  ports:
+  - port: 80
+    targetPort: 80

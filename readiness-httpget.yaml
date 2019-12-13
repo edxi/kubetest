@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: readiness-pod
+  labels:
+    name: readiness-pod
+spec:
+  containers:
+  - name: readiness-pod
+    image: ikubernetes/myapp:v1
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "50m"
+    ports:
+      - containerPort: 80
+        name: http
+    readinessProbe:
+        httpGet:
+          port: http
+          path: /index.html
+        initialDelaySeconds: 1
+        periodSeconds: 2

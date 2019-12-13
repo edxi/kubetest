@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: poststart-pod
+  labels:
+    name: poststart-pod
+spec:
+  containers:
+  - name: poststart-pod
+    image: busybox
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "50m"
+    ports:
+      - containerPort: 80
+    lifecycle:
+        postStart:
+          exec:
+            command: ["/bin/sh","-c","mkdir -p /data/web/html; echo 'homepage'>/data/web/html/index.html"]
+    command: ["/bin/sh","-c","sleep 3;/bin/httpd -f -h /data/web/html"]
+    #args: ["-f","-h","/data/web/html"]
