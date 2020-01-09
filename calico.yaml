@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calicotest
+  namespace: ns-calico2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: calicotest
+  template:
+    metadata:
+      labels:
+        app: calicotest
+        user: edxi
+    spec:
+      containers:
+      - name: web
+        image: ikubernetes/myapp:v1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "50m"
+        ports:
+        - containerPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: calicotest
+  namespace: ns-calico2
+  labels:
+    user: edxi
+spec:
+  selector:
+    app: calicotest
+  ports:
+  - port: 80
+    targetPort: 80
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calicoclient
+  namespace: ns-calico2
+  labels:
+    user: edxi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: calicoclient
+      user: edxi
+  template:
+    metadata:
+      labels:
+        app: calicoclient
+        user: edxi
+    spec:
+      containers:
+      - name: calicoclient
+        image: alpine
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "50m"
+        command:
+          - "/bin/sh"
+          - "-c"
+          - "sleep 3600"
+
+
+---
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-calico1
+  labels:
+    user: calico1
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns-calico2
+  labels:
+    user: edxi
+  annotations:
+    net.beta.kubernetes.io/network-policy: |
+      {
+        "ingress": {
+          "isolation": "DefaultDeny"
+        }
+      }
+
