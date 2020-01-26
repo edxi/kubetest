@@ -45,6 +45,8 @@ spec:
               mountPath: /etc/mysql/conf.d
             - name: nfs-pvc-mysql-vol
               mountPath: /var/lib/mysql
+            - name: nfs-pvc-2-vol
+              mountPath: /mnt
         resources:
           limits:
             memory: "512Mi"
@@ -63,8 +65,10 @@ spec:
                 path: mysqld.cnf
         - name: nfs-pvc-mysql-vol
           persistentVolumeClaim:
-            claimName: nfs-pvc-mysql
-      
+            claimName: nfs-pvc-1
+        - name: nfs-pvc-2-vol
+          persistentVolumeClaim:
+            claimName: nfs-pvc-2
 
 
 # ---

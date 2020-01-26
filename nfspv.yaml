@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: nfs-pv-mysql
+  name: nfs-pv-1
 spec:
   # 设置容量
   capacity:
@@ -10,11 +10,11 @@ spec:
   accessModes:
     # 该卷能够以读写模式被多个节点同时加载
     - ReadWriteMany
-  # 回收策略，这里是基础擦除 `rm-rf/thevolume/*`
-  persistentVolumeReclaimPolicy: Recycle
+  # 回收策略，这里是调用一个默认的recycler pod基础擦除 `rm-rf/thevolume/*`，也可以自定义这个recycler pod
+  persistentVolumeReclaimPolicy: Recycle #Recycel已经要deprecated，建议使用动态供应
   nfs:
     # NFS 服务端配置的路径
-    path: "/var/nfs"
+    path: "/var/nfs/share1"
     # NFS 服务端地址
     server: nfsserver
     readOnly: false
@@ -22,14 +22,45 @@ spec:
 ---
 
 apiVersion: v1
-kind: PersistentVolumeClaim
+kind: PersistentVolume
 metadata:
-  name: nfs-pvc-mysql
+  name: nfs-pv-2
 spec:
+  # 设置容量
+  capacity:
+    storage: 5Gi
+  # 访问模式
   accessModes:
-  # 需要使用和 PV 一致的访问模式
-  - ReadWriteMany
-  # 按需分配资源
-  resources:
-     requests:
-       storage: 1Gi
+    # 该卷能够以读写模式被多个节点同时加载
+    - ReadWriteMany
+  # 回收策略，persistentvolume-controller不支持nfs删除，删除pvc后，这个pv会fail
+  persistentVolumeReclaimPolicy: Delete
+  nfs:
+    # NFS 服务端配置的路径
+    path: "/var/nfs/share2"
+    # NFS 服务端地址
+    server: nfsserver
+    readOnly: false
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-pv-3
+spec:
+  # 设置容量
+  capacity:
+    storage: 5Gi
+  # 访问模式
+  accessModes:
+    # 该卷能够以读写模式被多个节点同时加载
+    - ReadWriteMany
+  # 回收策略，绑定的pvc删除后，这个pv会变成released，数据保留，如果需要重新用，只能删掉重新建，删掉pv不会破坏nfs上的数据
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    # NFS 服务端配置的路径
+    path: "/var/nfs/share3"
+    # NFS 服务端地址
+    server: nfsserver
+    readOnly: false
