@@ -1,0 +1,38 @@
+# kind: PersistentVolumeClaim
+# apiVersion: v1
+# metadata:
+#   name: ceph-fs-pvc1
+# spec:
+#   accessModes:     
+#     - ReadWriteOnce # 可以cephfs可以ReadWriteMany
+#   storageClassName: mycephfs
+#   resources:
+#     requests:
+#       storage: 1Gi
+
+# ---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ceph-fs-pvc2
+spec:
+  accessModes:     
+    - ReadWriteMany
+  storageClassName: mycephfs
+  resources:
+    requests:
+      storage: 2Gi
+
+# ---
+
+# kind: PersistentVolumeClaim
+# apiVersion: v1
+# metadata:
+#   name: ceph-fs-pvc3
+# spec:
+#   accessModes:
+#     - ReadWriteMany
+#   resources:
+#     requests:
+#       storage: 1Gi
